@@ -7,7 +7,7 @@
 
 This repository contains the source code for the Practical Project of the **Aprendizagem Aplicada à Segurança (AAS)** course.
 
-The objective of this project is to **detect and classify network intrusions in real-time** using **machine learning**. The system processes streaming network traffic data, continuously adapting to new patterns through online learning while maintaining high detection accuracy.
+The objective of this project is to **detect and classify network intrusions in real-time** using **machine learning**. The system processes streaming network traffic data, continuously adapting to new patterns through online learning while maintaining high detection performance.
 
 The project implements a dual-model architecture:
 
@@ -28,13 +28,19 @@ The project implements a dual-model architecture:
 
 It is strongly recommended to run this project inside a virtual environment to avoid dependency conflicts.
 
-### 1. Go to Project Directory
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/andreaoliveira9/Projeto-AAS.git
+```
+
+### 2. Go to Project Directory
 
 ```bash
 cd Projeto-AAS
 ```
 
-### 2. Create and Activate Virtual Environment
+### 3. Create and Activate Virtual Environment
 
 **Linux / macOS:**
 
@@ -50,7 +56,7 @@ python -m venv venv
 .\venv\Scripts\Activate
 ```
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -59,35 +65,30 @@ pip install -r requirements.txt
 ## Dataset
 
 This project utilizes the **NF-CICIDS2018-v3** dataset, a comprehensive network intrusion detection dataset containing NetFlow features extracted from network traffic captures.
+    
+  - **Source:** [NF-CICIDS2018-v3 Dataset](https://staff.itee.uq.edu.au/marius/NIDS_datasets/)
+  - **Setup:** Place the dataset files in the `data/` folder. If the dataset is large, run the provided script to download it:
+    ```bash
+      python scripts/download_data.py
+    ```
 
-- **Source:** [NF-CICIDS2018-v3 Dataset](https://staff.itee.uq.edu.au/marius/NIDS_datasets/)
-- **Setup:** Place the dataset files in the `data/` folder. If the dataset is large, run the provided script to download it:
+  After download, the dataset is preprocessed and split into training/test/evaluation
+  sets using the provided notebooks. The preprocessing step also generates reusable artifacts (encoders, scalers, imputers) for real-time data transformation.
 
-  ```bash
-  python scripts/download_data.py
-  ```
-
-  After download, the dataset is preprocessed and split into training/test/evaluation sets using the provided notebooks.
-
-- **Preprocessed Splits:**
+- **Preprocessed Splits:** (stored in `data/preprocessed/`)
   - `train_data.csv`: 14,511 samples (60% benign, 40% attacks) for initial training
   - `test_data.csv`: 104,484 samples (preprocessed features) for streaming simulation
   - `test_raw.csv`: 130,605 samples (raw features) for real-time preprocessing testing
   - `eval_data.csv`: 26,121 samples for model validation during streaming
-
+  
+- **Preprocessing Artifacts** (stored in `data/preprocessing_artifacts/`):
+  - `encoders.pkl`: Categorical feature encoders
+  - `scaler.pkl`: Feature scaling transformations
+  - `imputer.pkl`: Missing value imputation strategies
+  - `feature_config.pkl`: Feature configuration and metadata
 ## Usage
 
-### 1. Download Dataset (if not already available)
-
-If you don't have the dataset yet, download it using the automated script:
-
-```bash
-python scripts/download_data.py
-```
-
-This will download the dataset file to the `data/` directory.
-
-### 2. Data Preprocessing and Analysis
+### 1. Data Preprocessing and Analysis
 
 After downloading the dataset, run the data analysis notebook to preprocess it and prepare the training/test/evaluation splits:
 
@@ -103,8 +104,9 @@ This notebook will:
 - Feature engineering
 - Create train/test/evaluation splits
 - Generate preprocessed CSV files in `data/processed/`
+- Generate preprocessing artifacts in `data/preprocessing_artifacts/` (encoders, scalers, imputers, feature config)
 
-### 3. Model Training
+### 2. Model Training
 
 Train both the binary and multi-class classifiers:
 
@@ -121,7 +123,7 @@ This notebook will:
 
 **Note:** Copy the trained model files to the `models/` directory for use in the detection system.
 
-### 4. Real-Time Detection System
+### 3. Real-Time Detection System
 
 Run the intrusion detection system with streaming packet simulation and cleared logs:
 
@@ -145,7 +147,7 @@ python ./src/run_detection_system.py --clear-logs
 - `--attack-classifier`: Path to multi-class attack classifier (optional)
 - `--no-preprocessing`: Disable real-time preprocessing even if artifacts are available
 
-### 5. Visualization Dashboard
+### 4. Visualization Dashboard
 
 Launch the Streamlit dashboard to visualize detection metrics in real-time or analyze past sessions:
 
@@ -155,7 +157,7 @@ streamlit run ./src/dashboard/streamlit_dashboard.py
 
 **Note:** The dashboard reads logs from `src/logs/` directory. You can:
 
-- Run it **during system execution** for real-time monitoring (logs update continuously)
+- Run it **during system execution** for real-time monitoring
 - Run it **after execution** for offline analysis of completed sessions
 
 ## Major Results
@@ -201,7 +203,7 @@ The following table shows the top 3 models evaluated for attack type classificat
 ### Key Findings
 
 - The **shadow model architecture prevents model degradation** during incremental learning, with automated validation before model promotion
-- **Low False Negative Rate** for critical attacks (DDOS, Brute Force) is maintained through strict MCC thresholds
+- **Low False Negative Rate** for critical attacks (DDoS, Brute Force) is maintained through strict MCC thresholds
 - The system successfully handles **concept drift** through continuous monitoring and adaptive retraining
 - **Attack type classification provides actionable intelligence** for security analysts, enabling targeted response strategies
 

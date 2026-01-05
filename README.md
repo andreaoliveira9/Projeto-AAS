@@ -164,7 +164,9 @@ streamlit run ./src/dashboard/streamlit_dashboard.py
 
 ### Binary Classification (Attack Detection)
 
-The following table summarizes the performance of our **SGD classifier** (selected for incremental learning) on the evaluation set (26,121 samples).
+#### Initial Evaluation (Before Online Learning)
+
+The following table summarizes the **initial performance** of our SGD classifier on the evaluation set (26,121 samples):
 
 | Class        | Precision | Recall | F1-Score | Support |
 | :----------- | :-------: | :----: | :------: | :-----: |
@@ -173,7 +175,23 @@ The following table summarizes the performance of our **SGD classifier** (select
 | **Accuracy** |           |        | **0.83** | 26,121  |
 | **MCC**      |           |        | **0.64** |         |
 
-**Note:** Initial performance is modest because SGD is optimized for online learning. Performance improves significantly during streaming operation as the model adapts to new patterns.
+#### After Online Learning (39,579 packets, 32 retraining cycles)
+
+After continuous adaptation through incremental learning, the model achieved significantly improved performance:
+
+| Metric         |  Value  |
+| :------------- | :-----: |
+| **Accuracy**   | **0.89** |
+| **MCC**        | **0.78** |
+| **Precision**  |  0.81   |
+| **Recall**     |  0.94   |
+| **F1-Score**   |  0.87   |
+
+**Key Improvements:**
+- Accuracy increased from 0.83 to 0.89 (+6%)
+- MCC improved from 0.64 to 0.78 (+14%)
+- Recall improved from 0.67 to 0.94 (+27%), significantly reducing false negatives
+- The model successfully adapted to new attack patterns through 32 retraining cycles
 
 ### Multi-Class Classification (Attack Type Detection)
 
